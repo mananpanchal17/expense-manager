@@ -1,0 +1,103 @@
+{% macro render_form(form, button='Save', multipart=false) %}
+  <form method="post"
+        {% if multipart %}enctype="multipart/form-data"{% endif %}>
+    {{ form.hidden_tag() }}
+    {% for field in form if field.type not in ['CSRFTokenField','HiddenField','SubmitField'] %}
+      <div class="mb-3">
+        {% if field.type == "BooleanField" %}
+          <div class="form-check">{{ field(class='form-check-input') }}{{ field.label(class='form-check-label') }}</div>
+        {% else %}
+          {{ field.label(class='form-label') }}
+          {% if field.type == "SelectField" %}{{ field(class='form-select' + (' is-invalid' if field.errors else '')) }}
+          {% elif field.type == "DecimalField" %}{{ field(class='form-control' + (' is-invalid' if field.errors else ''), step='0.01', min='0.01', max='999999999.99') }}
+          {% elif field.type == "PasswordField" %}{{ field(class='form-control' + (' is-invalid' if field.errors else ''), autocomplete='current-password' if field.name in ['current_password','password'] and request.endpoint in ['auth.login','auth.profile','auth.delete_account'] else 'new-password') }}
+        {% else %}{{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}{% endif %}
+      {% endif %}
+      {% for error in field.errors %}
+        <div class="text-danger small mt-1">{{ error }}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+    <button class="btn btn-primary px-4" type="submit">{{ button }}</button>
+  </form>
+{% endmacro %}
+{% macro delete_button(action, message='Delete this record?') %}
+  <form method="post"
+        action="{{ action }}"
+        class="d-inline"
+        data-confirm="{{ message }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+  </form>
+{% endmacro %}
+{% macro summary_cards(summary, month_spend=none) %}
+  <div class="row g-3 mb-4">
+    {% for label, value, color in [('Total income', summary.income,'income'),('Total expenses',summary.expense,'expense'),('Balance',summary.balance,'balance')] %}
+      <div class="col-sm-6 {{ 'col-xl-3' if month_spend is not none else 'col-lg-4' }}">
+        <section class="card metric-card h-100 {{ color }}">
+          <div class="card-body">
+            <p class="text-body-secondary small mb-2">{{ label }}</p>
+            <p class="metric-value mb-0">{{ value|money }}</p>
+          </div>
+        </section>
+      </div>
+    {% endfor %}
+    {% if month_spend is not none %}
+      <div class="col-sm-6 col-xl-3">
+        <section class="card metric-card h-100">
+          <div class="card-body">
+            <p class="text-body-secondary small mb-2">This month's spend</p>
+            <p class="metric-value mb-0">{{ month_spend|money }}</p>
+          </div>
+        </section>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+{% macro transaction_table(rows, editable=false) %}
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Category / notes</th>
+          <th>Payment</th>
+          <th>Type</th>
+          <th class="text-end">Amount</th>
+          {% if editable %}
+            <th class="text-end">Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td class="text-nowrap">{{ row.date }}</td>
+            <td>
+              <div class="fw-semibold">{{ row.category.name }}</div>
+              <div class="small text-body-secondary note-text">{{ row.notes }}{% if row.recurring_id %} <span class="badge text-bg-secondary">Recurring</span>
+        {% endif %}
+      </div>
+    </td>
+    <td>{{ row.payment_method }}</td>
+    <td>
+      <span class="badge {{ 'text-bg-success' if row.kind == 'income' else 'text-bg-light' }}">{{ row.kind|title }}</span>
+    </td>
+    <td class="text-end text-nowrap fw-semibold">{{ row.amount_minor|money }}</td>
+    {% if editable %}
+      <td class="text-end text-nowrap">
+        <a class="btn btn-sm btn-outline-secondary"
+           href="{{ url_for('expenses.edit', record_id=row.id) }}">Edit</a> {{ delete_button(url_for('expenses.delete', record_id=row.id)) }}
+      </td>
+    {% endif %}
+  </tr>
+{% else %}
+  <tr>
+    <td colspan="{{ 6 if editable else 5 }}"
+        class="text-center py-5 text-body-secondary">No transactions yet. Add your first income or expense to get started.</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endmacro %}
