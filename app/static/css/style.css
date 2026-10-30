@@ -1,0 +1,42 @@
+:root { --accent:#147d64; --bs-primary:#147d64; }
+body { background:#f4f7f6; font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }
+[data-bs-theme="dark"] body { background:#101b21; }
+.content-shell { max-width:1440px; padding-left:clamp(16px,4vw,56px); padding-right:clamp(16px,4vw,56px); }
+.navbar { min-height:76px; }
+.navbar-brand { font-size:1.05rem; letter-spacing:-.4px; }
+.brand-mark { display:inline-grid; place-items:center; width:34px; height:34px; margin-right:8px; background:var(--accent); color:#fff; border-radius:10px; }
+.nav-link { font-size:.875rem; }
+.nav-link.active { color:var(--accent)!important; font-weight:700; }
+.btn-primary { --bs-btn-bg:#147d64; --bs-btn-border-color:#147d64; --bs-btn-hover-bg:#0d634f; --bs-btn-hover-border-color:#0d634f; --bs-btn-active-bg:#0d634f; --bs-btn-active-border-color:#0d634f; }
+.btn-outline-primary { --bs-btn-color:#147d64; --bs-btn-border-color:#147d64; --bs-btn-hover-bg:#147d64; --bs-btn-hover-border-color:#147d64; }
+[data-bs-theme="dark"] .btn-outline-primary { --bs-btn-color:#6ddbb8; --bs-btn-border-color:#6ddbb8; }
+a { color:#147d64; }
+[data-bs-theme="dark"] a { color:#7bdfc2; }
+.btn-primary { color:white!important; }
+.card { border:1px solid var(--bs-border-color); border-radius:16px; box-shadow:0 3px 16px #163e3004; }
+.card-body { padding:1.5rem; }
+.eyebrow { font-size:.7rem; font-weight:750; letter-spacing:1.7px; color:var(--accent); }
+[data-bs-theme="dark"] .eyebrow { color:#7bdfc2; }
+.metric-card { border-top:3px solid #a8b9c3; }
+.metric-card.income { border-top-color:#147d64; }
+.metric-card.expense { border-top-color:#e0a56b; }
+.metric-card.balance { border-top-color:#597fc3; }
+.metric-value { font-size:clamp(1.3rem,2.1vw,1.8rem); font-weight:700; letter-spacing:-.7px; overflow-wrap:anywhere; }
+.chart-wrap { height:260px; position:relative; }
+.empty-block { padding:3rem 1rem; }
+.table th { font-size:.73rem; text-transform:uppercase; letter-spacing:.7px; color:var(--bs-secondary-color); padding:14px; }
+.table td { padding:15px 14px; font-size:.875rem; }
+.note-text { overflow-wrap:anywhere; white-space:pre-wrap; max-width:550px; }
+.auth-layout { max-width:480px; padding-top:2rem; padding-bottom:3rem; }
+.form-layout { max-width:700px; }
+.form-label { font-size:.875rem; font-weight:600; }
+.form-control,.form-select { min-height:42px; }
+.budget-progress { width:100%; height:8px; border:0; border-radius:8px; appearance:none; background:var(--bs-secondary-bg); color:#147d64; }
+.budget-progress::-webkit-progress-bar { background:var(--bs-secondary-bg); border-radius:8px; }
+.budget-progress::-webkit-progress-value { background:#147d64; border-radius:8px; }
+.budget-progress::-moz-progress-bar { background:#147d64; border-radius:8px; }
+.budget-progress.warning::-webkit-progress-value { background:#d89928; }
+.budget-progress.danger::-webkit-progress-value { background:#d54c55; }
+.budget-progress.warning::-moz-progress-bar { background:#d89928; }
+.budget-progress.danger::-moz-progress-bar { background:#d54c55; }
+@media(max-width:575px) { .card-body { padding:1rem; } .navbar-brand { font-size:.95rem; } .chart-wrap { height:230px; } }
