@@ -1,0 +1,6 @@
+kind,amount,category,date,payment_method,notes
+income,15000.00,Salary,2026-10-01,Bank transfer,Monthly allowance
+expense,180.00,Food,2026-10-02,UPI,Lunch
+expense,350.00,Travel,2026-10-03,Cash,Bus pass
+expense,5000.00,Rent,2026-10-05,Bank transfer,Hostel rent
+expense,799.00,Bills,2026-10-10,UPI,Phone recharge
