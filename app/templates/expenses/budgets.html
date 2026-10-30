@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form, delete_button %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <div class="eyebrow">SPEND WITH INTENTION</div>
+      <h1 class="h2 fw-bold">Monthly budgets</h1>
+    </div>
+    <form method="get" class="d-flex gap-2 align-items-center">
+      <label for="viewmonth" class="visually-hidden">Month to view</label>
+      <input class="form-control"
+             type="month"
+             name="month"
+             id="viewmonth"
+             value="{{ month.strftime('%Y-%m') }}">
+      <button class="btn btn-outline-secondary">View</button>
+    </form>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body p-4">
+          <h2 class="h5">Set a monthly limit</h2>
+          <p class="small text-body-secondary">Use the same category and month to update an existing budget.</p>
+          {{ render_form(form, 'Save budget') }}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <h2 class="h5 mb-3">{{ month.strftime("%B %Y") }}</h2>
+      {% for item in items %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <strong>{{ item.budget.category.name }}</strong>{{ delete_button(url_for('expenses.delete_budget', record_id=item.budget.id)) }}
+            </div>
+            <div class="d-flex justify-content-between gap-3 mb-2">
+              <span>{{ item.spent|money }} <span class="text-body-secondary">of {{ item.budget.amount_minor|money }}</span>
+              </span>
+              <span class="badge text-bg-{{ item.level }}">{{ item.percent|round(1) }}%</span>
+            </div>
+            <progress class="budget-progress {{ item.level }}"
+                      max="100"
+                      value="{{ [item.percent,100]|min }}"
+                      aria-label="{{ item.budget.category.name }} budget used">{{ item.percent }}%</progress>
+            {% if item.percent >= 100 %}
+              <p class="small text-danger mt-2 mb-0">Budget reached or exceeded.</p>
+            {% elif item.percent >= 80 %}
+              <p class="small mt-2 mb-0">You've used at least 80% of this budget.</p>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <div class="card">
+          <div class="card-body py-5 text-center text-body-secondary">No budgets for this month. Set your first category limit.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

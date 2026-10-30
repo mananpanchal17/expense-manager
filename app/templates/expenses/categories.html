@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form, delete_button %}
+{% block content %}
+  <h1 class="h2 fw-bold mb-4">Categories</h1>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <section class="card">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-3">Add a category</h2>
+          {{ render_form(form, 'Add category') }}
+        </div>
+      </section>
+    </div>
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body">
+          <p class="small text-body-secondary">Categories can be used for income or expenses. In-use categories cannot be deleted.</p>
+          <ul class="list-group list-group-flush">
+            {% for id,name in categories %}
+              <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                <span>{{ name }}</span>
+                <div class="text-nowrap">
+                  <a class="btn btn-sm btn-outline-secondary"
+                     href="{{ url_for('expenses.edit_category', record_id=id) }}">Edit</a> {{ delete_button(url_for('expenses.delete_category', record_id=id)) }}
+                </div>
+              </li>
+            {% else %}
+              <li class="list-group-item">Create a category to start tracking.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

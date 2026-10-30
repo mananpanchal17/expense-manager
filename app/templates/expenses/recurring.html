@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form, delete_button %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <div class="eyebrow">PLAN AHEAD</div>
+      <h1 class="h2 fw-bold">Recurring expenses</h1>
+    </div>
+    <form method="post" action="{{ url_for('expenses.generate_recurring') }}">
+      {{ action_form.hidden_tag() }}<button class="btn btn-primary">Generate due expenses</button>
+    </form>
+  </div>
+  <p class="text-body-secondary">Create rules for rent and subscriptions. Generate overdue entries here or run the daily scheduled command described in the README.</p>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-3">New recurring expense</h2>
+          {{ render_form(form, 'Create rule') }}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      {% for rule in rules %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between gap-3">
+              <h2 class="h5">{{ rule.category.name }}</h2>
+              <strong>{{ rule.amount_minor|money }}</strong>
+            </div>
+            <p class="text-body-secondary mb-2">{{ rule.frequency|title }} · Next due {{ rule.next_due }} · {{ rule.payment_method }}</p>
+            <p class="note-text">{{ rule.notes }}</p>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge {{ 'text-bg-success' if rule.active else 'text-bg-secondary' }} me-auto">{{ 'Active' if rule.active else 'Paused' }}</span>
+              <a class="btn btn-sm btn-outline-secondary"
+                 href="{{ url_for('expenses.edit_recurring', record_id=rule.id) }}">Edit / pause</a>{{ delete_button(url_for('expenses.delete_recurring', record_id=rule.id), 'Delete this rule? Previously generated transactions will remain.') }}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="card">
+          <div class="card-body py-5 text-center text-body-secondary">No recurring rules yet.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

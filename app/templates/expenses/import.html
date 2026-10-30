@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form %}
+{% block content %}
+  <div class="form-layout mx-auto">
+    <h1 class="h2 fw-bold mb-4">Import transactions</h1>
+    <div class="card">
+      <div class="card-body p-4">
+        <p>Upload a UTF-8 CSV with these exact headers. Both income and expenses are supported. Create any missing categories first.</p>
+        <pre class="small p-3 bg-body-tertiary rounded">kind,amount,category,date,payment_method,notes
+expense,120.50,Food,2026-10-30,UPI,Lunch
+income,5000.00,Salary,2026-10-30,Bank transfer,Allowance</pre>
+        <p class="small text-body-secondary">Dates: YYYY-MM-DD. Amounts: positive, with at most two decimal places. Payment methods: Cash, UPI, Debit card, Credit card, Bank transfer, Other.</p>
+        <div class="alert alert-info">Every row must be valid, or nothing is imported. Re-importing the same file creates duplicate transactions.</div>
+        {{ render_form(form, 'Validate and import', true) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form %}
+{% block content %}
+  <div class="form-layout mx-auto">
+    <a href="{{ url_for('expenses.index') }}" class="small">← Transactions</a>
+    <h1 class="h2 fw-bold mt-3 mb-4">{{ title }}</h1>
+    <div class="card">
+      <div class="card-body p-4">{{ render_form(form) }}</div>
+    </div>
+  </div>
+{% endblock %}

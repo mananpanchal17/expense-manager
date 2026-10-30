@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from 'macros.html' import transaction_table %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+      <div class="eyebrow">YOUR LEDGER</div>
+      <h1 class="h2 fw-bold mb-0">Transactions</h1>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('expenses.import_csv') }}">Import CSV</a>
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('reports.export_csv', **request.args) }}">Export CSV</a>
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('reports.export_pdf', **request.args) }}">Export PDF</a>
+      <a class="btn btn-primary" href="{{ url_for('expenses.add') }}">+ Add transaction</a>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label" for="q">Search notes or categories</label>
+          <input class="form-control"
+                 name="q"
+                 id="q"
+                 value="{{ request.args.get('q', '') }}"
+                 maxlength="100"
+                 placeholder="Coffee, travel, rent…">
+        </div>
+        <div class="col-6 col-md-2">
+          <label for="kind" class="form-label">Type</label>
+          <select name="kind" id="kind" class="form-select">
+            <option value="">All types</option>
+            {% for val in ['income','expense'] %}
+              <option value="{{ val }}" {{ 'selected' if request.args.get("kind") == val }}>{{ val|title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label for="category" class="form-label">Category</label>
+          <select name="category" id="category" class="form-select">
+            <option value="">All categories</option>
+            {% for id,name in categories %}
+              <option value="{{ id }}"
+                      {{ 'selected' if request.args.get("category") == id|string }}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="sort" class="form-label">Sort</label>
+          <select class="form-select" id="sort" name="sort">
+            {% for val,label in [('date_desc','Newest first'),('date_asc','Oldest first'),('amount_desc','Highest amount'),('amount_asc','Lowest amount'),('category','Category A–Z')] %}
+              <option value="{{ val }}"
+                      {{ 'selected' if request.args.get('sort', 'date_desc') == val }}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% for name,label,type in [('start','From date','date'),('end','To date','date'),('min_amount','Minimum amount','number'),('max_amount','Maximum amount','number')] %}
+          <div class="col-6 col-md-2">
+            <label class="form-label" for="{{ name }}">{{ label }}</label>
+            <input type="{{ type }}"
+                   {% if type == 'number' %}step="0.01" min="0"{% endif %}
+                   class="form-control"
+                   id="{{ name }}"
+                   name="{{ name }}"
+                   value="{{ request.args.get(name,'') }}">
+          </div>
+        {% endfor %}
+        <div class="col-md-4 d-flex gap-2">
+          <button class="btn btn-primary">Apply filters</button>
+          <a href="{{ url_for('expenses.index') }}"
+             class="btn btn-outline-secondary">Clear</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card overflow-hidden">{{ transaction_table(page.items, true) }}</div>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="small text-body-secondary">{{ page.total }} records · Page {{ page.page }} of {{ page.pages or 1 }}</span>
+    <div class="d-flex gap-2">
+      {% if page.has_prev %}
+        <a class="btn btn-outline-secondary btn-sm"
+           href="{{ url_for('expenses.index', **dict(request.args, page=page.prev_num)) }}">Previous</a>
+      {% endif %}
+      {% if page.has_next %}
+        <a class="btn btn-outline-secondary btn-sm"
+           href="{{ url_for('expenses.index', **dict(request.args, page=page.next_num)) }}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
