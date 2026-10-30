@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% from 'macros.html' import summary_cards %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4">
+    <div>
+      <div class="eyebrow">LOOK BACK, PLAN FORWARD</div>
+      <h1 class="h2 fw-bold">{{ title }}</h1>
+      <span class="text-body-secondary">{{ start }} to {{ end }}</span>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('reports.export_csv', start=start, end=end) }}">Export CSV</a>
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('reports.export_pdf', start=start, end=end) }}">Export PDF</a>
+    </div>
+  </div>
+  <form method="get" class="d-flex gap-2 align-items-end mb-4 flex-wrap">
+    <div>
+      <label for="year" class="form-label">Year</label>
+      <input class="form-control"
+             type="number"
+             min="1900"
+             max="9998"
+             name="year"
+             id="year"
+             value="{{ year }}"
+             required>
+    </div>
+    {% if period == "monthly" %}
+      <div>
+        <label for="month" class="form-label">Month</label>
+        <select class="form-select" name="month" id="month">
+          {% for m in range(1,13) %}
+            <option value="{{ m }}" {{ 'selected' if m == month }}>{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    <button class="btn btn-primary">Show report</button>
+    <a class="btn btn-outline-secondary"
+       href="{{ url_for('reports.report', period='yearly' if period == 'monthly' else 'monthly', year=year) }}">{{ 'Yearly' if period == 'monthly' else 'Monthly' }} report</a>
+  </form>
+  {{ summary_cards(summary) }}
+  {% if month_rows %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5">Month by month</h2>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Income</th>
+                <th>Expenses</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for name,values in month_rows %}
+                <tr>
+                  <td>{{ name }}</td>
+                  <td>{{ values.income|money }}</td>
+                  <td>{{ values.expense|money }}</td>
+                  <td>{{ values.balance|money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <div class="card">
+    <div class="card-body">
+      <h2 class="h5">Category breakdown</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Type</th>
+              <th class="text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category,kind,amount in rows %}
+              <tr>
+                <td>{{ category }}</td>
+                <td>{{ kind|title }}</td>
+                <td class="text-end">{{ amount|money }}</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="3" class="text-center text-body-secondary py-4">No transactions in this period.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

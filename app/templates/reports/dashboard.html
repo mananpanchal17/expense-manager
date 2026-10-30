@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% from 'macros.html' import summary_cards, transaction_table %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+      <div class="eyebrow mb-1">{{ today.strftime("%B %Y") }} · YOUR MONEY AT A GLANCE</div>
+      <h1 class="fw-bold h2 mb-1">A clearer picture.</h1>
+      <p class="text-body-secondary mb-0">Welcome, {{ current_user.name }}. Here's where things stand.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('expenses.add') }}">+ Add transaction</a>
+  </div>
+  {{ summary_cards(summary, month_spend) }}
+  {% for item in budgets if item.percent >= 80 %}
+    <div class="alert alert-{{ item.level }}">
+      {{ item.budget.category.name }}: {{ item.percent|round(1) }}% of this month's budget used. <a class="alert-link"
+    href="{{ url_for('expenses.budgets') }}">Review budgets</a>
+    </div>
+  {% endfor %}
+  <div id="chart-error"
+       class="alert alert-warning d-none"
+       role="status">Charts could not load. Your balances and reports are still available.</div>
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Where it went</h2>
+          <p class="small text-body-secondary">Expense categories · this month</p>
+          <div class="chart-wrap">
+            <canvas id="category-chart"
+                    role="img"
+                    aria-label="Expenses by category for this month">
+            </canvas>
+          </div>
+          <p id="category-empty"
+             class="small text-body-secondary d-none">Add an expense this month to see your breakdown.</p>
+          <a class="small"
+             href="{{ url_for('reports.report', period='monthly') }}">View accessible table</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Your spending rhythm</h2>
+          <p class="small text-body-secondary">Monthly expenses · last 12 months</p>
+          <div class="chart-wrap">
+            <canvas id="trend-chart"
+                    role="img"
+                    aria-label="Monthly expense trend over the past 12 months">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-4 mb-4">
+    <div class="col-lg-7">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">In vs out</h2>
+          <p class="small text-body-secondary">Income and expenses · last 12 months</p>
+          <div class="chart-wrap">
+            <canvas id="comparison-chart"
+                    role="img"
+                    aria-label="Income and expense comparison">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h2 class="h5">Budget check-in</h2>
+            <a class="small" href="{{ url_for('expenses.budgets') }}">Manage</a>
+          </div>
+          {% for item in budgets %}
+            <div class="mt-4">
+              <div class="d-flex justify-content-between small mb-2">
+                <strong>{{ item.budget.category.name }}</strong>
+                <span>{{ item.percent|round(1) }}%</span>
+              </div>
+              <progress class="budget-progress {{ item.level }}"
+                        max="100"
+                        value="{{ [item.percent,100]|min }}"
+                        aria-label="{{ item.budget.category.name }} budget used">
+              </progress>
+              <p class="small text-body-secondary mt-1">{{ item.spent|money }} / {{ item.budget.amount_minor|money }}</p>
+            </div>
+          {% else %}
+            <div class="empty-block">
+              <p class="h5">Give your spending a plan.</p>
+              <p class="text-body-secondary small">Set monthly category limits and get a warning at 80% and 100%.</p>
+              <a class="btn btn-outline-primary"
+                 href="{{ url_for('expenses.budgets') }}">Create a budget</a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="card overflow-hidden">
+    <div class="card-body d-flex justify-content-between">
+      <h2 class="h5 mb-0">Recent transactions</h2>
+      <a class="small" href="{{ url_for('expenses.index') }}">View all →</a>
+    </div>
+    {{ transaction_table(recent) }}
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}" defer></script>
+{% endblock %}
