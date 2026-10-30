@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from 'macros.html' import render_form %}
+{% block content %}
+  <h1 class="h2 fw-bold mb-4">Your profile</h1>
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-body p-4">{{ render_form(form, 'Update profile') }}</div>
+      </div>
+      <p class="small text-body-secondary mt-3">Currency is a display preference for this single-currency ledger. Changing it does not convert stored amounts.</p>
+      <a href="{{ url_for('auth.delete_account') }}"
+         class="btn btn-outline-danger">Delete account</a>
+    </div>
+    <div class="col-lg-7">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h5">Recent activity</h2>
+          <p class="small text-body-secondary">Latest 100 events · timestamps in UTC</p>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Time (UTC)</th>
+                  <th>Event</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for log in logs %}
+                  <tr>
+                    <td class="text-nowrap small">{{ log.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>{{ log.event }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
