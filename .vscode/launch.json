@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Expense Manager",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["--app", "run", "run", "--debug"],
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}\\.env",
+      "jinja": true,
+      "justMyCode": true,
+      "preLaunchTask": "Expense Manager: First-time setup"
+    }
+  ]
+}
